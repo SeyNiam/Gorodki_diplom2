@@ -102,7 +102,7 @@ fun Modifier.circleBtn() = this.then(
 fun Modifier.menuBtn() = this.then(
     Modifier
         .fillMaxWidth(fraction = 0.9f)
-        .height(52.dp)
+        .height(64.dp)
         //.clip(shape = RoundedCornerShape(6.dp))
         //.background(Color.Gray)
 )
@@ -122,7 +122,7 @@ fun ColumnSample(/*navController: NavController*/) {
         ) {
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
 
-            // todo: circle settings & pfp pic here and stuff
+            // circle settings & pfp pic here and stuff
             Row (
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -133,7 +133,7 @@ fun ColumnSample(/*navController: NavController*/) {
                 Box(modifier = Modifier.grayCircle())
             }
 
-            // todo: cool game title here ig
+            // cool game title here ig
             PrintText("ГОРОДКИ")
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -161,8 +161,11 @@ fun ColumnSample(/*navController: NavController*/) {
     Text("test without NavController")
 }
 
+var darkCyan = 0xFF008080
+var darkerCyan = 0xFF004040
+
 enum class Screen {
-    Menu, Profile, Settings, CGame
+    Menu, Profile, Settings, CGame, Rules
 }
 
 @Composable
@@ -172,17 +175,19 @@ fun MenuScreen() {
         Screen.Menu -> HomeScreen(
             onProfileClick = { currentScreen = Screen.Profile },
             onSettingsClick = { currentScreen = Screen.Settings },
-            onCGameClick = { currentScreen = Screen.CGame }
+            onCGameClick = { currentScreen = Screen.CGame },
+            onRulesClick = { currentScreen = Screen.Rules }
         )
         Screen.Profile -> ProfileScreen { currentScreen = Screen.Menu }
         Screen.Settings -> SettingsScreen { currentScreen = Screen.Menu }
         Screen.CGame -> CGameScreen { currentScreen = Screen.Menu }
+        Screen.Rules -> RulesScreen { currentScreen = Screen.Menu }
     }
 }
 
 
 @Composable
-fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit) {
+fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit, onRulesClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -190,43 +195,73 @@ fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameC
         contentAlignment = Alignment.Center
     ) {
         Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
         ) {
-            Button(
-                onClick = onProfileClick,
-                modifier = Modifier.menuBtn(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF008080) // Dark Cyan
-                )//,shape = ButtonDefaults.Shape.RoundedCornerShape(16.dp) // Rounded Corners
-            ) {
-                Text("Profile", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = onSettingsClick,
-                modifier = Modifier.circleBtn(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF008080) // Dark Cyan
-                )
-            ) {
-                //Text("Settings")
-                // Image on the button
-                Image(
-                    painter = painterResource(id = R.drawable.sttng), // Replace with your actual image resource
-                    contentDescription = "Settings Icon",
-                    modifier = Modifier.size(24.dp) // Adjust size as needed
-                )
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Row (
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp, 0.dp, 10.dp, 0.dp),
+            ){
+                Button(
+                    onClick = onProfileClick,
+                    modifier = Modifier.circleBtn(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(darkCyan)
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.pfp),
+                        contentDescription = "Profile Icon",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.circleBtn(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(darkCyan)
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.sttng),
+                        contentDescription = "Settings Icon",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.02f))
+            Text("ГОРОДКИ", fontSize = 44.sp, fontWeight = FontWeight.Light, color = Color(darkerCyan))
+
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.08f))
             Button(
                 onClick = onCGameClick,
                 modifier = Modifier.menuBtn(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF008080) )
+                colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
             ) {
-                Text("Classic game", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                Text("Классическая игра", fontSize = 22.sp, fontWeight = FontWeight.Medium, color = Color.White)
             }
+
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Button(
+                onClick = onRulesClick,
+                modifier = Modifier.menuBtn(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
+            ) {
+                Text("Правила", fontSize = 22.sp, fontWeight = FontWeight.Medium, color = Color.White)
+            }
+
         }
     }
 }
@@ -246,9 +281,10 @@ fun ProfileScreen(onScreenChange: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = onScreenChange,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.menuBtn(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
         ) {
-            Text("PBack to Menu")
+            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
         }
     }
 }
@@ -266,9 +302,10 @@ fun SettingsScreen(onScreenChange: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = onScreenChange,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.menuBtn(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
         ) {
-            Text("SBack to Menu")
+            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
         }
     }
 }
@@ -286,9 +323,31 @@ fun CGameScreen(onScreenChange: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = onScreenChange,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.menuBtn(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
         ) {
-            Text("CGame Back to Menu")
+            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
+        }
+    }
+}
+
+@Composable
+fun RulesScreen(onScreenChange: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Rules Screen", modifier = Modifier.padding(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onScreenChange,
+            modifier = Modifier.menuBtn(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
+        ) {
+            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
         }
     }
 }
@@ -296,7 +355,8 @@ fun CGameScreen(onScreenChange: () -> Unit) {
 
 
 
-@Preview(widthDp = 300, heightDp = 700, showBackground = true)
+
+@Preview(widthDp = 400, heightDp = 800, showBackground = true)
 @Composable
 fun MenuScreenPreview() {
     Gorodki_diplomTheme {
