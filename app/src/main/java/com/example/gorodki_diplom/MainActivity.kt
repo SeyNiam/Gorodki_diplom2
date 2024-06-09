@@ -162,7 +162,7 @@ fun ColumnSample(/*navController: NavController*/) {
 }
 
 enum class Screen {
-    Menu, Profile, Settings
+    Menu, Profile, Settings, CGame
 }
 
 @Composable
@@ -171,16 +171,18 @@ fun MenuScreen() {
     when (currentScreen) {
         Screen.Menu -> HomeScreen(
             onProfileClick = { currentScreen = Screen.Profile },
-            onSettingsClick = { currentScreen = Screen.Settings }
+            onSettingsClick = { currentScreen = Screen.Settings },
+            onCGameClick = { currentScreen = Screen.CGame }
         )
         Screen.Profile -> ProfileScreen { currentScreen = Screen.Menu }
         Screen.Settings -> SettingsScreen { currentScreen = Screen.Menu }
+        Screen.CGame -> CGameScreen { currentScreen = Screen.Menu }
     }
 }
 
 
 @Composable
-fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit) {
+fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -215,6 +217,15 @@ fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit) {
                     contentDescription = "Settings Icon",
                     modifier = Modifier.size(24.dp) // Adjust size as needed
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onCGameClick,
+                modifier = Modifier.menuBtn(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF008080) )
+            ) {
+                Text("Classic game", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White)
             }
         }
     }
@@ -258,6 +269,26 @@ fun SettingsScreen(onScreenChange: () -> Unit) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text("SBack to Menu")
+        }
+    }
+}
+
+@Composable
+fun CGameScreen(onScreenChange: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Classic game Screen", modifier = Modifier.padding(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onScreenChange,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("CGame Back to Menu")
         }
     }
 }
