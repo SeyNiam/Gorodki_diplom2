@@ -120,7 +120,7 @@ fun CustomMenuButton(
     icon: Int? = null, // Optional image resource
     modifier: Modifier = Modifier,
     textColor: Color = Color.White, // Default text color
-    backgroundColor: Color = Color(darkCyan) // Dark Cyan
+    backgroundColor: Color = Color(darkCyan)
 ) {
     Button(
         onClick = onClick,
@@ -155,7 +155,7 @@ fun CustomCircleButton(
     icon: Int? = null, // Optional image resource
     modifier: Modifier = Modifier,
     textColor: Color = Color.White, // Default text color
-    backgroundColor: Color = Color(darkCyan) // Dark Cyan
+    backgroundColor: Color = Color(darkCyan)
 ) {
     Button(
         onClick = onClick,
@@ -251,90 +251,143 @@ fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameC
 
 @Composable
 fun ProfileScreen(onScreenChange: () -> Unit) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text("Profile Screen", modifier = Modifier.padding(16.dp))
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = onScreenChange,
-            modifier = Modifier.menuBtn(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
         ) {
-            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Row (
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp, 0.dp, 10.dp, 0.dp),
+            ){
+                CustomCircleButton(text = "<", onClick = onScreenChange)
+            }
+            Text("Profile Screen", modifier = Modifier.padding(16.dp))
         }
     }
 }
 
 @Composable
 fun SettingsScreen(onScreenChange: () -> Unit) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text("Settings Screen", modifier = Modifier.padding(16.dp))
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = onScreenChange,
-            modifier = Modifier.menuBtn(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
         ) {
-            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Row (
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp, 0.dp, 10.dp, 0.dp),
+            ){
+                CustomCircleButton(text = "<", onClick = onScreenChange)
+            }
+            Text("Settings Screen", modifier = Modifier.padding(16.dp))
         }
     }
 }
 
 @Composable
 fun CGameScreen(onScreenChange: () -> Unit) {
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Text("Classic game Screen", modifier = Modifier.padding(16.dp))
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = onScreenChange,
-            modifier = Modifier.menuBtn(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
         ) {
-            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Row (
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp, 0.dp, 10.dp, 0.dp),
+            ){
+                CustomCircleButton(text = "<", onClick = onScreenChange)
+            }
+            Text("Classic game Screen", modifier = Modifier.padding(16.dp), color = Color.White)
         }
     }
-}
+} // todo: move layout of preview TestCGameScreen here
 
 @Composable
 fun RulesScreen(onScreenChange: () -> Unit) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text("Rules Screen", modifier = Modifier.padding(16.dp))
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = onScreenChange,
-            modifier = Modifier.menuBtn(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
         ) {
-            Text("<", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Row (
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp, 0.dp, 10.dp, 0.dp),
+            ){
+                CustomCircleButton(text = "<", onClick = onScreenChange)
+            }
+            Text("Rules Screen", modifier = Modifier.padding(16.dp))
         }
     }
 }
 
 
+@Preview(widthDp = 400, heightDp = 800, showBackground = true)
+@Composable
+fun TestCGameScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+        ) {
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Text("Classic game Screen", modifier = Modifier.padding(16.dp), color = Color.White)
+            Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray)){
 
+            }
+        }
+    }
+}
 
 
 @Preview(widthDp = 400, heightDp = 800, showBackground = true)
