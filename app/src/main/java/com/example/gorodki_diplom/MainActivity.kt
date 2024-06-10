@@ -380,9 +380,10 @@ fun TestCGameScreen() {
                 .fillMaxSize()
                 .background(Color.Black),
         ) {
-            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
-            Text("Classic game Screen", modifier = Modifier.padding(16.dp), color = Color.White)
-            Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray)){
+            Box(modifier = Modifier.fillMaxSize()){
+                // todo: game here
+
+
 
             }
         }
