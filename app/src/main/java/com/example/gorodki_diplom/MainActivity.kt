@@ -84,86 +84,109 @@ sealed class Screen(val route: String) {
 }
 */
 
+// Colours
+var darkCyan = 0xFF008080
+var darkerCyan = 0xFF004040
 
+// Reusable Title text
 @Composable
-fun PrintText(text: String, modifier: Modifier = Modifier) {
+fun PrintTileText(text: String, modifier: Modifier = Modifier) {
     Text(
             text = "$text",
-            modifier = modifier
+            modifier = modifier,
+            fontSize = 44.sp,
+            fontWeight = FontWeight.Light,
+            color = Color(darkerCyan)
     )
 }
 
+// Button modifiers
 fun Modifier.circleBtn() = this.then(
     Modifier
-        //.size(52.dp)
         .clip(CircleShape)
-        //.background(Color.Gray)
 )
 fun Modifier.menuBtn() = this.then(
     Modifier
         .fillMaxWidth(fraction = 0.9f)
         .height(64.dp)
-        //.clip(shape = RoundedCornerShape(6.dp))
-        //.background(Color.Gray)
 )
 
 
-// todo: copy this layout thingy into normal menu
+// Reusable Button Composables
 @Composable
-fun ColumnSample(/*navController: NavController*/) {
-    /*
-    if (navController != null) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White),
-        ) {
-            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
-
-            // circle settings & pfp pic here and stuff
-            Row (
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp, 0.dp, 10.dp, 0.dp),
-            ){
-                Box(modifier = Modifier.grayCircle())
-                Box(modifier = Modifier.grayCircle())
-            }
-
-            // cool game title here ig
-            PrintText("ГОРОДКИ")
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // also how tf do i make those buttons anyone?? help??? text?? likns?? actionfs??
-            // todo: figure out how to make those buttons
-            Box(modifier = Modifier
-                .menuBox()
-                .clickable {
-                    navController.navigate(Screen.ScreenMenu.route)
-                }
+fun CustomMenuButton(
+    text: String,
+    onClick: () -> Unit,
+    icon: Int? = null, // Optional image resource
+    modifier: Modifier = Modifier,
+    textColor: Color = Color.White, // Default text color
+    backgroundColor: Color = Color(darkCyan) // Dark Cyan
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.menuBtn(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor
+        )
+    ) {
+        if (icon != null) {
+            // Display image if provided
+            Image(
+                painter = painterResource(id = icon),
+                contentDescription = "Button Icon",
+                modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            Box(modifier = Modifier.menuBox())
-            Spacer(modifier = Modifier.height(6.dp))
-            Box(modifier = Modifier.menuBox())
-            Spacer(modifier = Modifier.height(6.dp))
-            Box(modifier = Modifier.menuBox())
-            Spacer(modifier = Modifier.height(6.dp))
+        } else {
+            // Display text if no image provided
+            Text(
+                text = text,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Medium,
+                color = textColor // Use the provided text color
+            )
         }
-    } else {
-        // Handle the case when navController is null, for example:
-        Text("Error: NavController is null")
     }
-    */
-    Text("test without NavController")
 }
 
-var darkCyan = 0xFF008080
-var darkerCyan = 0xFF004040
+@Composable
+fun CustomCircleButton(
+    text: String,
+    onClick: () -> Unit,
+    icon: Int? = null, // Optional image resource
+    modifier: Modifier = Modifier,
+    textColor: Color = Color.White, // Default text color
+    backgroundColor: Color = Color(darkCyan) // Dark Cyan
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.circleBtn(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor
+        )
+    ) {
+        if (icon != null) {
+            // Display image if provided
+            Image(
+                painter = painterResource(id = icon),
+                contentDescription = "Button Icon",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+            )
+        } else {
+            // Display text if no image provided
+            Text(
+                text = text,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Medium,
+                color = textColor // Use the provided text color
+            )
+        }
+    }
+}
 
+
+// All screens
 enum class Screen {
     Menu, Profile, Settings, CGame, Rules
 }
@@ -184,7 +207,6 @@ fun MenuScreen() {
         Screen.Rules -> RulesScreen { currentScreen = Screen.Menu }
     }
 }
-
 
 @Composable
 fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit, onRulesClick: () -> Unit) {
@@ -208,59 +230,18 @@ fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameC
                     .fillMaxWidth()
                     .padding(10.dp, 0.dp, 10.dp, 0.dp),
             ){
-                Button(
-                    onClick = onProfileClick,
-                    modifier = Modifier.circleBtn(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(darkCyan)
-                    )
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.pfp),
-                        contentDescription = "Profile Icon",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = onSettingsClick,
-                    modifier = Modifier.circleBtn(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(darkCyan)
-                    )
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.sttng),
-                        contentDescription = "Settings Icon",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                    )
-                }
+                CustomCircleButton(text = "Profile Icon", onClick = onProfileClick, R.drawable.pfp)
+                CustomCircleButton(text = "Settings Icon", onClick = onSettingsClick, R.drawable.sttng)
             }
 
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.02f))
-            Text("ГОРОДКИ", fontSize = 44.sp, fontWeight = FontWeight.Light, color = Color(darkerCyan))
+            PrintTileText(text = "ГОРОДКИ")
 
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.08f))
-            Button(
-                onClick = onCGameClick,
-                modifier = Modifier.menuBtn(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
-            ) {
-                Text("Классическая игра", fontSize = 22.sp, fontWeight = FontWeight.Medium, color = Color.White)
-            }
+            CustomMenuButton(text = "Классическая игра", onClick = onCGameClick)
 
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
-            Button(
-                onClick = onRulesClick,
-                modifier = Modifier.menuBtn(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(darkCyan) )
-            ) {
-                Text("Правила", fontSize = 22.sp, fontWeight = FontWeight.Medium, color = Color.White)
-            }
+            CustomMenuButton(text = "Правила", onClick = onRulesClick)
 
         }
     }
