@@ -66,5 +66,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha03")
+    implementation("com.badlogicgames.gdx:gdx:1.9.12")
+    implementation("com.badlogicgames.gdx:gdx-backend-android:1.9.12")
 
 }
