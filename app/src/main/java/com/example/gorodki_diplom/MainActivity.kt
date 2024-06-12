@@ -1,6 +1,7 @@
 package com.example.gorodki_diplom
 
-/* todo
+// todo: these things:
+/*
 - change icon (res/drawable and/or mipmap?)
 res/values:
     - add cool colours with names (no lame numbers)
@@ -84,6 +85,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Size
@@ -775,6 +777,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Preview(widthDp = 400, heightDp = 800, showBackground = true)
+/**/
 @Composable
 fun TestNCGameScreen() {
     var angle by remember { mutableStateOf(0f) }
@@ -782,8 +785,8 @@ fun TestNCGameScreen() {
 
     LaunchedEffect(Unit) {
         while (true) {
-            angle = (angle + 4) % 360
-            delay(10)
+            angle = (angle + 1) % 360
+            delay(20)
         }
     }
 
@@ -791,35 +794,92 @@ fun TestNCGameScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-                    offset += dragAmount
-                }
-            }
+
     ) {
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
-                .graphicsLayer(
-                    translationX = offset.x,
-                    translationY = offset.y,
-                    rotationZ = angle
-                )
         ) {
             val canvasWidth = size.width
             val canvasHeight = size.height
 
-            // Translate the line to its center before rotating it
-            translate(left = canvasWidth / 2, top = canvasHeight / 2) {
-                drawLine(
-                    color = Color.White,
-                    start = Offset(x = 0f, y = -canvasHeight / 10),
-                    end = Offset(x = 0f, y = canvasHeight / 10),
-                    strokeWidth = 8.0f
-                )
+            // Two static rectangles
+            drawRect( // Left
+                color = Color.White,
+                topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
+                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+            )
+
+            drawRect( // Right
+                color = Color.White,
+                topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
+                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+            )
+
+        }
+
+        Column {
+            Box(modifier = Modifier.fillMaxHeight(0.4f))
+            Box(
+                modifier = Modifier
+                    //.background(Color.Green) //todo: hide this
+                    //.align(alignment = Alignment.BottomCenter) ////////////////////
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            //offset += dragAmount
+                            //todo: change to this after collision is working
+                            offset += Offset(x = dragAmount.x, y = 0f)
+                        }
+                    }
+            ){
+                // The Throw line
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ){
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+
+                    translate(left = canvasWidth / 2, top = canvasHeight / 2) {
+                        drawLine(
+                            color = Color.White,
+                            start = Offset(x = -canvasWidth, y = 0f),
+                            end = Offset(x = canvasWidth, y = 0f),
+                            strokeWidth = 4.0f
+                        )
+                    }
+                }
+                // Transformations to the Bita line
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            translationX = offset.x,
+                            translationY = offset.y,
+                            rotationZ = angle
+                        )
+                ) {
+                    // The line here to be transformed
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+
+                    // Translate the line to its center before rotating it
+                    translate(left = canvasWidth / 2, top = canvasHeight / 2) {
+                        drawLine(
+                            color = Color.White,
+                            start = Offset(x = -canvasWidth / 6, y = 0f),
+                            end = Offset(x = canvasWidth / 6, y = 0f),
+                            strokeWidth = 14.0f
+                        )
+                    }
+                }
             }
         }
+
     }
 }
 
