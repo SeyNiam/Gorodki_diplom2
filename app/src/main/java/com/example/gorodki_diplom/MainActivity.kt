@@ -102,6 +102,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.unit.plus
+import kotlinx.coroutines.yield
 import kotlin.math.max
 import kotlin.math.min
 
@@ -500,6 +501,9 @@ fun TestNCGameScreen() {
     var angle by remember { mutableStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
+    var bitaLinePosition by remember { mutableStateOf(Offset.Zero) }
+    var isDragging by remember { mutableStateOf(false) }
+
     var isFirstRectVisible by remember { mutableStateOf(true) }
     var isSecondRectVisible by remember { mutableStateOf(true) }
     var isThirdRectVisible by remember { mutableStateOf(true) }
@@ -520,10 +524,25 @@ fun TestNCGameScreen() {
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
-                    offset += dragAmount
+                    offset += Offset(x = dragAmount.x, y = 0f)
                 }
             }
+            .clickable {
+                isDragging = false
+            }
     ) {
+
+        if (!isDragging) {
+            LaunchedEffect(Unit) {
+                while (bitaLinePosition.y > -800) {
+                    bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 10)
+                    delay(16)
+                }
+                bitaLinePosition = Offset.Zero
+                isDragging = true
+            }
+        }
+
         Column {
             //Box(modifier = Modifier.fillMaxHeight(0.4f))
             Box(
@@ -589,8 +608,8 @@ fun TestNCGameScreen() {
                     modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer(
-                            translationX = offset.x,
-                            translationY = offset.y,
+                            translationX = bitaLinePosition.x + offset.x,
+                            translationY = bitaLinePosition.y + offset.y,
                             rotationZ = angle
                         )
                 ) {
