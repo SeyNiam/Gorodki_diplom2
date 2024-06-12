@@ -99,132 +99,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.drawscope.translate
-
-/*
-@Composable
-fun rememberedGameState(): Pair<Line, List<Square>> {
-    val line = remember { Line(x = 0f, y = 0f) }
-    val squares = remember {
-        mutableStateListOf<Square>().apply {
-            repeat(10) {
-                add(Square(x = Random.nextFloat() * 1000, y = Random.nextFloat() * 2000))
-            }
-        }
-    }
-    return Pair(line, squares)
-}
-
-data class Line(
-    var x: Float,
-    var y: Float,
-    var angle: Float = 0f, // Initialize the angle to 0
-    val length: Float = 100f,
-    val thickness: Float = 5f
-)
-
-
-data class Square(
-    var x: Float,
-    var y: Float,
-    val size: Float = 20f
-)
-*/
-
-
-//@Preview(widthDp = 400, heightDp = 800, showBackground = true)
-/*
-@Composable
-fun GameScreen(
-    line: Line,
-    squares: List<Square>,
-    onLinePress: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawLine(
-                color = Color.White,
-                start = Offset(line.x - line.thickness / 2, line.y - line.thickness / 2),
-                end = Offset(
-                    line.x + line.length * cos(line.angle) - line.thickness / 2,
-                    line.y + line.length * sin(line.angle) - line.thickness / 2
-                ),
-                strokeWidth = line.thickness
-            )
-
-            squares.forEach { square ->
-                drawRect(
-                    color = Color.White,
-                    topLeft = Offset(square.x, square.y),
-                    size = Size(square.size, square.size)
-                )
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .offset { IntOffset(line.x.toInt(), line.y.toInt()) }
-                .size(line.thickness.dp, line.thickness.dp)
-                .clickable(onClick = onLinePress)
-        )
-    }
-}
-*/
-
-/*
-@Composable
-fun GameScreen(
-    line: Line,
-    squares: List<Square>,
-    onLinePress: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawLine(
-                color = Color.White,
-                start = Offset(line.x - line.thickness / 2, line.y - line.thickness / 2),
-                end = Offset(
-                    line.x + line.length * cos(line.angle) - line.thickness / 2,
-                    line.y + line.length * sin(line.angle) - line.thickness / 2
-                ),
-                strokeWidth = line.thickness
-            )
-
-            squares.forEach { square ->
-                drawRect(
-                    color = Color.White,
-                    topLeft = Offset(square.x, square.y),
-                    size = Size(square.size, square.size)
-                )
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .offset { IntOffset(line.x.toInt(), line.y.toInt()) }
-                .size(line.thickness.dp, line.thickness.dp)
-                .clickable(onClick = onLinePress)
-        )
-    }
-}
-*/
-
-
-
-
-
-
-
+import androidx.compose.ui.unit.plus
+import kotlin.math.max
+import kotlin.math.min
 
 
 
@@ -522,7 +401,7 @@ fun RulesScreen(onScreenChange: () -> Unit) {
 }
 
 
-@Preview(widthDp = 400, heightDp = 800, showBackground = true)
+//@Preview(widthDp = 400, heightDp = 800, showBackground = true)
 @Composable
 fun TestCGameScreen() {
     Box(
@@ -549,30 +428,7 @@ fun TestCGameScreen() {
     }
 }
 
-/*
-@Composable
-fun LibGDXGameContainer(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
 
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            val config = AndroidApplicationConfiguration()
-            object : AndroidFragmentApplication() {
-                fun createApplication(): MyLibGDXGame {
-                    return MyLibGDXGame() // Your LibGDX game class
-                }
-
-                override fun startActivity(intent: Intent?) {
-                    TODO("Not yet implemented")
-                }
-            }
-        }
-    )
-}
-*/
-
-//@Preview(widthDp = 400, heightDp = 800, showBackground = true)
 @Composable
 fun MenuScreenPreview() {
     Gorodki_diplomTheme {
@@ -580,208 +436,213 @@ fun MenuScreenPreview() {
     }
 }
 
-/*
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            Gorodki_diplomTheme {
-                MenuScreen()
-            }
-        }
-    }
+
+fun doesLineIntersectRectangle(lineStart: Offset, lineEnd: Offset, rectTopLeft: Offset, rectSize: Size): Boolean {
+    //val rectBottomRight = rectTopLeft + rectSize
+    val rectBottomRight = Offset(x = rectTopLeft.x + rectSize.width, y = rectTopLeft.y + rectSize.height)
+
+
+    // Check if the line is outside the rectangle's bounds
+    if (lineStart.x < rectTopLeft.x && lineEnd.x < rectTopLeft.x) return false
+    if (lineStart.x > rectBottomRight.x && lineEnd.x > rectBottomRight.x) return false
+    if (lineStart.y < rectTopLeft.y && lineEnd.y < rectTopLeft.y) return false
+    if (lineStart.y > rectBottomRight.y && lineEnd.y > rectBottomRight.y) return false
+
+    // Check if the line intersects with any of the rectangle's edges
+    val line = Line(lineStart, lineEnd)
+    val top = Line(rectTopLeft, Offset(x = rectBottomRight.x, y = rectTopLeft.y))
+    val bottom = Line(Offset(x = rectTopLeft.x, y = rectBottomRight.y), rectBottomRight)
+    val left = Line(rectTopLeft, Offset(x = rectTopLeft.x, y = rectBottomRight.y))
+    val right = Line(Offset(x = rectBottomRight.x, y = rectTopLeft.y), rectBottomRight)
+
+    return line.intersects(top) || line.intersects(bottom) || line.intersects(left) || line.intersects(right)
 }
-*/
-/*
-class MainActivity : ComponentActivity() {
-    private val line = Line(x = 0f, y = 0f)
-    // Use mutableStateListOf instead of listOf and make it a var to be able to modify it
-    private var squares = mutableStateListOf<Square>()
-        .apply {
-            repeat(10) {
-                add(Square(x = Random.nextFloat() * 1000, y = Random.nextFloat() * 2000))
-            }
-        }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            Gorodki_diplomTheme {
-                // Wrap GameScreen in a remember block to store the state of line and squares
-                remember {
-                    GameScreen(
-                        line = line,
-                        squares = squares,
-                        onLinePress = {
-                            line.angle += 90f
-                            line.y -= 10f
+data class Line(val start: Offset, val end: Offset) {
+    fun intersects(other: Line): Boolean {
+        val d1 = direction(start, end, other.start)
+        val d2 = direction(start, end, other.end)
+        val d3 = direction(other.start, other.end, start)
+        val d4 = direction(other.start, other.end, end)
 
-                            // Collision detection
-                            squares.forEachIndexed { index, square ->
-                                if (isCollision(line, square)) {
-                                    // Use removeAt(index) on the mutableStateListOf
-                                    squares.removeAt(index)
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    private fun isCollision(line: Line, square: Square): Boolean {
-        val lineStart = Offset(line.x, line.y)
-        val lineEnd = Offset(
-            line.x + line.length * cos(line.angle),
-            line.y +
-                    line.length * sin(line.angle)
-        )
-
-
-// Calculate the bounding box of the square
-        val squareLeft = square.x
-        val squareTop = square.y
-        val squareRight = square.x + square.size
-        val squareBottom = square.y + square.size
-
-// Check if the line's start or end point is inside the square's bounding box
-        if (lineStart.x in squareLeft..squareRight && lineStart.y in squareTop..squareBottom) {
-            return true
-        }
-        if (lineEnd.x in squareLeft..squareRight && lineEnd.y in squareTop..squareBottom) {
-            return true
-        }
-
-// If not, check for intersection between the line and the square's edges
-        val edges = listOf(
-            Pair(Offset(squareLeft, squareTop), Offset(squareRight, squareTop)),
-            Pair(Offset(squareRight, squareTop), Offset(squareRight, squareBottom)),
-            Pair(Offset(squareRight, squareBottom), Offset(squareLeft, squareBottom)),
-            Pair(Offset(squareLeft, squareBottom), Offset(squareLeft, squareTop))
-        )
-
-        edges.forEach { (edgeStart, edgeEnd) ->
-            if (intersects(lineStart, lineEnd, edgeStart, edgeEnd)) {
-                return true
-            }
-        }
+        if (d1 != d2 && d3 != d4) return true
+        if (d1 == 0 && onSegment(start, other.start, end)) return true
+        if (d2 == 0 && onSegment(start, other.end, end)) return true
+        if (d3 == 0 && onSegment(other.start, start, other.end)) return true
+        if (d4 == 0 && onSegment(other.start, end, other.end)) return true
 
         return false
     }
 
-    private fun intersects(
-        start1: Offset,
-        end1: Offset,
-        start2: Offset,
-        end2: Offset
-    ): Boolean {
-        val det = (end2.x - start2.x) * (end1.y - start1.y) - (end1.x - start1.x) * (end2.y - start2.y)
-        if (det == 0f) {
-            return false
-        }
+    private fun direction(p1: Offset, p2: Offset, p3: Offset): Int {
+        val val1 = (p3.y - p1.y) * (p2.x - p1.x)
+        val val2 = (p3.x - p1.x) * (p2.y - p1.y)
+        return if (val1 < val2) -1 else if (val1 > val2) 1 else 0
+    }
 
-        val t = ((start2.y - start1.y) * (start1.x - start2.x) + (start1.x - start2.x) * (start1.y - start2.y)) / det
-        val u = -((start2.y - start1.y) * (start1.x - start2.x) + (start1.x - start2.x) * (start1.y - start2.y)) / det
-
-        return t in 0f..1f && u in 0f..1f
+    private fun onSegment(p1: Offset, p2: Offset, p3: Offset): Boolean {
+        return p2.x <= max(p1.x, p3.x) && p2.x >= min(p1.x, p3.x) &&
+                p2.y <= max(p1.y, p3.y) && p2.y >= min(p1.y, p3.y)
     }
 }
-*/
-/*
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            Gorodki_diplomTheme {
-                // Use the rememberedGameState composable function to store the game state
-                val (line, squares) by rememberedGameState()
 
-                GameScreen(
-                    line = line,
-                    squares = squares,
-                    onLinePress = {
-                        line.angle += 90f
-                        line.y -= 10f
-
-                        // Collision detection
-                        squares.forEachIndexed { index, square ->
-                            if (isCollision(line, square)) {
-                                // Use removeAt(index) on the mutableStateListOf
-                                squares.removeAt(index)
-                            }
-                        }
-                    }
-                )
-            }
-        }
-    }
-
-    private fun isCollision(line: Line, square: Square): Boolean {
-        val lineStart = Offset(line.x, line.y)
-        val lineEnd = Offset(
-            line.x + line.length * cos(line.angle),
-            line.y + line.length * sin(line.angle)
-        )
-
-        // Calculate the bounding box of the square
-        val squareLeft = square.x
-        val squareTop = square.y
-        val squareRight = square.x + square.size
-        val squareBottom = square.y + square.size
-
-        // Check if the line's start or end point is inside the square's bounding box
-        if (lineStart.x in squareLeft..squareRight && lineStart.y in squareTop..squareBottom) {
-            return true
-        }
-        if (lineEnd.x in squareLeft..squareRight && lineEnd.y in squareTop..squareBottom) {
-            return true
-        }
-
-        // If not, check for intersection between the line and the square's edges
-        val edges = listOf(
-            Pair(Offset(squareLeft, squareTop), Offset(squareRight, squareTop)),
-            Pair(Offset(squareRight, squareTop), Offset(squareRight, squareBottom)),
-            Pair(Offset(squareRight, squareBottom), Offset(squareLeft, squareBottom)),
-            Pair(Offset(squareLeft, squareBottom), Offset(squareLeft, squareTop))
-        )
-        )
-        edges.forEach { (edgeStart, edgeEnd) ->
-            if (intersects(lineStart, lineEnd, edgeStart, edgeEnd)) {
-                return true
-            }
-        }
-
-        return false
-    }
-
-    private fun intersects(
-        start1: Offset,
-        end1: Offset,
-        start2: Offset,
-        end2: Offset
-    ): Boolean {
-        val det = (end2.x - start2.x) * (end1.y - start1.y) - (end1.x - start1.x) * (end2.y - start2.y)
-        if (det == 0f) {
-            return false
-        }
-
-        val t = ((start2.y - start1.y) * (start1.x - start2.x) + (start1.x - start2.x) * (start1.y - start2.y)) / det
-        val u = -((start2.y - start1.y) * (start1.x - start2.x) + (start1.x - start2.x) * (start1.y - start2.y)) / det
-
-        return t in 0f..1f && u in 0f..1f
-    }
+fun Offset.rotate(angle: Float): Offset {
+    val radians = Math.toRadians(angle.toDouble())
+    val cos = Math.cos(radians)
+    val sin = Math.sin(radians)
+    return Offset(x = (x * cos - y * sin).toFloat(), y = (x * sin + y * cos).toFloat())
 }
-*/
 
 
 @Preview(widthDp = 400, heightDp = 800, showBackground = true)
-/**/
 @Composable
 fun TestNCGameScreen() {
     var angle by remember { mutableStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
+
+    var isFirstRectVisible by remember { mutableStateOf(true) }
+    var isSecondRectVisible by remember { mutableStateOf(true) }
+    var isThirdRectVisible by remember { mutableStateOf(true) }
+    var isFourthRectVisible by remember { mutableStateOf(true) }
+    var isFifthRectVisible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            angle = (angle + 2) % 360
+            delay(8)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                    change.consume()
+                    offset += dragAmount
+                }
+            }
+    ) {
+        Column {
+            //Box(modifier = Modifier.fillMaxHeight(0.4f))
+            Box(
+                modifier = Modifier
+                    //.background(Color.Green)
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+            ){
+                Canvas(modifier = Modifier.fillMaxSize()){
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+
+                    // Throw line todo: move it according to the rules
+                    translate(left = canvasWidth / 2, top = canvasHeight / 2) {
+                        drawLine(
+                            color = Color.White,
+                            start = Offset(x = -canvasWidth, y = 0f),
+                            end = Offset(x = canvasWidth, y = 0f),
+                            strokeWidth = 4.0f
+                        )
+                    }
+
+                    // Rectangles todo: make them levels
+                    if (isFirstRectVisible) {
+                        drawRect(
+                            color = Color.White,
+                            topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
+                            size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                        )
+                    }
+                    if (isSecondRectVisible) {
+                        drawRect(
+                            color = Color.White,
+                            topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
+                            size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                        )
+                    }
+                    if (isThirdRectVisible) {
+                        drawRect(
+                            color = Color.White,
+                            topLeft = Offset(x = canvasWidth / 2, y = canvasHeight / 6),
+                            size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                        )
+                    }
+                    if (isFourthRectVisible) {
+                        drawRect(
+                            color = Color.White,
+                            topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 4),
+                            size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        )
+                    }
+                    if (isFifthRectVisible) {
+                        drawRect(
+                            color = Color.White,
+                            topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 10),
+                            size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        )
+                    }
+                }
+
+                // Bita line with checking if collided
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            translationX = offset.x,
+                            translationY = offset.y,
+                            rotationZ = angle
+                        )
+                ) {
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+
+                    // Rect positions todo: make it all into a class or something
+                    val firstRectTopLeft = Offset(x = (canvasWidth / 3).toFloat(), y = (canvasHeight / 6).toFloat())
+                    val firstRectSize = Size(width = (canvasWidth / 60).toFloat(), height = (canvasHeight / 40).toFloat())
+                    val secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2).toFloat(), y = (canvasHeight / 6).toFloat())
+                    val secondRectSize = Size(width = (canvasWidth / 60).toFloat(), height = (canvasHeight / 40).toFloat())
+                    val thirdRectTopLeft = Offset(x = (canvasWidth / 2).toFloat(), y = (canvasHeight / 6).toFloat())
+                    val thirdRectSize = Size(width = (canvasWidth / 60).toFloat(), height = (canvasHeight / 40).toFloat())
+                    val fourthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60).toFloat(), y = (canvasHeight / 4).toFloat())
+                    val fourthRectSize = Size(width = (canvasWidth / 40).toFloat(), height = (canvasHeight / 60).toFloat())
+                    val fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60).toFloat(), y = (canvasHeight / 10).toFloat())
+                    val fifthRectSize = Size(width = (canvasWidth / 40).toFloat(), height = (canvasHeight / 60).toFloat())
+
+
+                    val lineStart = Offset(x = -canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset
+                    val lineEnd = Offset(x = canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset
+
+                    // Collision detection todo: delete until the end of level
+                    isFirstRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, firstRectTopLeft, firstRectSize)
+                    isSecondRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, secondRectTopLeft, secondRectSize)
+                    isThirdRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, thirdRectTopLeft, thirdRectSize)
+                    isFourthRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, fourthRectTopLeft, fourthRectSize)
+                    isFifthRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, fifthRectTopLeft, fifthRectSize)
+
+                    translate(left = canvasWidth / 2, top = canvasHeight / 2) {
+                        drawLine(
+                            color = Color.White,
+                            start = Offset(x = -canvasWidth / 6, y = 0f),
+                            end = Offset(x = canvasWidth / 6, y = 0f),
+                            strokeWidth = 14.0f
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+@Composable
+fun TestNCGameScreen() {
+    var angle by remember { mutableStateOf(0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    var isLeftRectangleVisible by remember { mutableStateOf(true) }
+    var isRightRectangleVisible by remember { mutableStateOf(true) }
+
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -804,6 +665,7 @@ fun TestNCGameScreen() {
             val canvasHeight = size.height
 
             // Two static rectangles
+            /*
             drawRect( // Left
                 color = Color.White,
                 topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
@@ -815,6 +677,23 @@ fun TestNCGameScreen() {
                 topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
                 size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
             )
+            */
+            if (isLeftRectangleVisible) {
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
+                    size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                )
+            }
+
+            if (isRightRectangleVisible) {
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
+                    size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                )
+            }
+
 
         }
 
@@ -822,25 +701,47 @@ fun TestNCGameScreen() {
             Box(modifier = Modifier.fillMaxHeight(0.4f))
             Box(
                 modifier = Modifier
-                    //.background(Color.Green) //todo: hide this
-                    //.align(alignment = Alignment.BottomCenter) ////////////////////
+                    .background(Color.Green) //todo: hide this
                     .fillMaxHeight()
                     .fillMaxWidth()
-                    .height(160.dp)
                     .pointerInput(Unit) {
                         detectDragGestures { change, dragAmount ->
                             change.consume()
-                            //offset += dragAmount
-                            //todo: change to this after collision is working
-                            offset += Offset(x = dragAmount.x, y = 0f)
+                            offset += dragAmount
+                            //todo: change to offset += Offset(x = dragAmount.x, y = 0f) after collision is working
+                            //offset += Offset(x = dragAmount.x, y = 0f)
                         }
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            offset += dragAmount
+
+                            // Calculate the endpoints of the line
+                            //val lineStart = Offset(x = (size.width / 2 - size.width / 6).toFloat(), y = (size.height / 2).toFloat())
+                            //val lineEnd = Offset(x = (size.width / 2 + size.width / 6).toFloat(), y = (size.height / 2).toFloat())
+
+                            // Calculate the top left corner and size of each rectangle
+                            val leftRectTopLeft = Offset(x = (size.width / 3).toFloat(), y = (size.height / 6).toFloat())
+                            val leftRectSize = Size(width = (size.width / 60).toFloat(), height = (size.height / 40).toFloat())
+                            val rightRectTopLeft = Offset(x = (size.width / 6 + size.width / 2).toFloat(), y = (size.height / 6).toFloat())
+                            val rightRectSize = Size(width = (size.width / 60).toFloat(), height = (size.height / 40).toFloat())
+
+                            // Calculate the transformed line's endpoints
+                            val lineStart = Offset(x = (-size.width / 6).toFloat(), y = 0f).rotate(angle) + Offset(x = (size.width / 2).toFloat(), y = (size.height / 2).toFloat()) + offset
+                            val lineEnd = Offset(x = (size.width / 6).toFloat(), y = 0f).rotate(angle) + Offset(x = (size.width / 2).toFloat(), y = (size.height / 2).toFloat()) + offset
+
+                            // Check if the line intersects with each rectangle
+                            isLeftRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, leftRectTopLeft, leftRectSize)
+                            isRightRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, rightRectTopLeft, rightRectSize)
+
+                            // Check if the line intersects with each rectangle
+                            //isLeftRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, leftRectTopLeft, leftRectSize)
+                            //isRightRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, rightRectTopLeft, rightRectSize)
+                        }
+
                     }
             ){
                 // The Throw line
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ){
+                Canvas(modifier = Modifier.fillMaxSize()){
                     val canvasWidth = size.width
                     val canvasHeight = size.height
 
@@ -853,6 +754,7 @@ fun TestNCGameScreen() {
                         )
                     }
                 }
+
                 // Transformations to the Bita line
                 Canvas(
                     modifier = Modifier
@@ -882,7 +784,7 @@ fun TestNCGameScreen() {
 
     }
 }
-
+*/
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
