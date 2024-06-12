@@ -504,6 +504,8 @@ fun TestNCGameScreen() {
     var bitaLinePosition by remember { mutableStateOf(Offset.Zero) }
     var isDragging by remember { mutableStateOf(false) }
 
+    val verticalOffset = 600f
+
     var isFirstRectVisible by remember { mutableStateOf(true) }
     var isSecondRectVisible by remember { mutableStateOf(true) }
     var isThirdRectVisible by remember { mutableStateOf(true) }
@@ -534,9 +536,9 @@ fun TestNCGameScreen() {
 
         if (!isDragging) {
             LaunchedEffect(Unit) {
-                while (bitaLinePosition.y > -800) {
+                while (bitaLinePosition.y > -1800) {
                     bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 10)
-                    delay(16)
+                    delay(8)
                 }
                 bitaLinePosition = Offset.Zero
                 isDragging = true
@@ -556,7 +558,7 @@ fun TestNCGameScreen() {
                     val canvasHeight = size.height
 
                     // Throw line todo: move it according to the rules
-                    translate(left = canvasWidth / 2, top = canvasHeight / 2) {
+                    translate(left = canvasWidth / 2, top = canvasHeight / 2 + verticalOffset) {
                         drawLine(
                             color = Color.White,
                             start = Offset(x = -canvasWidth, y = 0f),
@@ -609,7 +611,7 @@ fun TestNCGameScreen() {
                         .fillMaxSize()
                         .graphicsLayer(
                             translationX = bitaLinePosition.x + offset.x,
-                            translationY = bitaLinePosition.y + offset.y,
+                            translationY = bitaLinePosition.y + offset.y + verticalOffset,
                             rotationZ = angle
                         )
                 ) {
