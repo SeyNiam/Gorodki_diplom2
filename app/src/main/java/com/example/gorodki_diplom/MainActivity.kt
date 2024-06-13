@@ -502,7 +502,7 @@ fun TestNCGameScreen() {
     var offset by remember { mutableStateOf(Offset.Zero) }
 
     var bitaLinePosition by remember { mutableStateOf(Offset.Zero) }
-    var isDragging by remember { mutableStateOf(false) }
+    var isDragging by remember { mutableStateOf(true) }
 
     val verticalOffset = 600f
 
@@ -518,6 +518,19 @@ fun TestNCGameScreen() {
             delay(8)
         }
     }
+    LaunchedEffect(isDragging) {
+        if (!isDragging) {
+            while (bitaLinePosition.y > -1600) {
+                bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 10)
+                delay(8)
+            }
+            bitaLinePosition = Offset.Zero
+            isDragging = true
+        }
+    }
+
+    var lastTime by remember { mutableStateOf(0L) }
+    val frameTime = 16_666_667 // 60fps
 
     Box(
         modifier = Modifier
@@ -526,27 +539,46 @@ fun TestNCGameScreen() {
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
-                    offset += Offset(x = dragAmount.x, y = 0f)
+                    if(isDragging){
+                        offset += Offset(x = dragAmount.x, y = 0f) // todo: dragAmount.y to y=0f
+                    }
                 }
             }
-            .clickable {
-                isDragging = false
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        isDragging = false
+                        /*
+                        var i = 0
+                        while(i<160){
+                            offset += Offset(x = 0f, y = -10f)
+                            //delay(8)
+                            i++
+                        }*/
+                        //bitaLinePosition = Offset.Zero
+                        //offset += Offset(x = 0f, y = 170f)
+                        /*
+                        while (offset.y > -1600) {
+                            var i = 0
+                            while (i < 8) {
+                                val currentTime = System.nanoTime()
+                                if (currentTime - lastTime >= frameTime) {
+                                    offset += Offset(x = 0f, y = -10f)
+                                    //bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 10)
+                                    lastTime = currentTime
+                                    i++
+                                }
+                            }
+                        }*/
+
+                    }
+                )
             }
     ) {
 
-        if (!isDragging) {
-            LaunchedEffect(Unit) {
-                while (bitaLinePosition.y > -1800) {
-                    bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 10)
-                    delay(8)
-                }
-                bitaLinePosition = Offset.Zero
-                isDragging = true
-            }
-        }
+
 
         Column {
-            //Box(modifier = Modifier.fillMaxHeight(0.4f))
             Box(
                 modifier = Modifier
                     //.background(Color.Green)
@@ -605,7 +637,7 @@ fun TestNCGameScreen() {
                     }
                 }
 
-                // Bita line with checking if collided
+                // Bita line with checking if intersected
                 Canvas(
                     modifier = Modifier
                         .fillMaxSize()
@@ -630,11 +662,10 @@ fun TestNCGameScreen() {
                     val fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60).toFloat(), y = (canvasHeight / 10).toFloat())
                     val fifthRectSize = Size(width = (canvasWidth / 40).toFloat(), height = (canvasHeight / 60).toFloat())
 
+                    val lineStart = Offset(x = -canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
+                    val lineEnd = Offset(x = canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
 
-                    val lineStart = Offset(x = -canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset
-                    val lineEnd = Offset(x = canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset
-
-                    // Collision detection todo: delete until the end of level
+                    // Intersection detection todo: delete until the end of level
                     isFirstRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, firstRectTopLeft, firstRectSize)
                     isSecondRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, secondRectTopLeft, secondRectSize)
                     isThirdRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, thirdRectTopLeft, thirdRectSize)
