@@ -25,6 +25,7 @@ res/values:
 - themes? (bg, colours, etc)
 */
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,8 +34,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,90 +44,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.badlogic.gdx.ApplicationAdapter
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputAdapter
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Vector2
 import com.example.gorodki_diplom.ui.theme.Gorodki_diplomTheme
-import com.badlogic.gdx.Game
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.core.graphics.toRectF
 import kotlinx.coroutines.delay
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.random.Random
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.*
 
-
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.unit.plus
-import kotlinx.coroutines.yield
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
 
-
-
-/*
-sealed class Screen(val route: String) {
-    object Menu : Screen("Menu")
-    object ClassicGame : Screen("ClassicGame")
-    object EndlessGame : Screen("EndlessGame")
-    object Leaderboard : Screen("Leaderboard")
-    object Rules : Screen("Rules")
-    object Profile : Screen("Profile")
-    object Settings : Screen("Settings")
-}
-*/
 
 // Colours
-var darkCyan = 0xFF008080
-var darkerCyan = 0xFF004040
+const val darkCyan = 0xFF008080
+const val darkerCyan = 0xFF004040
+
 
 // Reusable Title text
 @Composable
 fun PrintTileText(text: String, modifier: Modifier = Modifier) {
     Text(
-            text = "$text",
+            text = text,
             modifier = modifier,
             fontSize = 44.sp,
             fontWeight = FontWeight.Light,
@@ -154,7 +108,7 @@ fun CustomMenuButton(
     text: String,
     onClick: () -> Unit,
     icon: Int? = null, // Optional image resource
-    modifier: Modifier = Modifier,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     textColor: Color = Color.White, // Default text color
     backgroundColor: Color = Color(darkCyan)
 ) {
@@ -189,7 +143,7 @@ fun CustomCircleButton(
     text: String,
     onClick: () -> Unit,
     icon: Int? = null, // Optional image resource
-    modifier: Modifier = Modifier,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     textColor: Color = Color.White, // Default text color
     backgroundColor: Color = Color(darkCyan)
 ) {
@@ -370,7 +324,7 @@ fun CGameScreen(onScreenChange: () -> Unit) {
             TestNCGameScreen()
         }
     }
-} // todo: move layout of preview TestCGameScreen here
+}
 
 @Composable
 fun RulesScreen(onScreenChange: () -> Unit) {
@@ -401,41 +355,6 @@ fun RulesScreen(onScreenChange: () -> Unit) {
     }
 }
 
-
-//@Preview(widthDp = 400, heightDp = 800, showBackground = true)
-@Composable
-fun TestCGameScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-        ) {
-            Box(modifier = Modifier.fillMaxSize()){
-                // todo: game here
-
-                //LibGDXGameContainer(modifier = Modifier.fillMaxSize())
-                //MyGame()
-                //GameScreen()
-
-            }
-        }
-    }
-}
-
-
-@Composable
-fun MenuScreenPreview() {
-    Gorodki_diplomTheme {
-        MenuScreen()
-    }
-}
 
 
 fun doesLineIntersectRectangle(lineStart: Offset, lineEnd: Offset, rectTopLeft: Offset, rectSize: Size): Boolean {
@@ -489,8 +408,8 @@ data class Line(val start: Offset, val end: Offset) {
 
 fun Offset.rotate(angle: Float): Offset {
     val radians = Math.toRadians(angle.toDouble())
-    val cos = Math.cos(radians)
-    val sin = Math.sin(radians)
+    val cos = cos(radians)
+    val sin = sin(radians)
     return Offset(x = (x * cos - y * sin).toFloat(), y = (x * sin + y * cos).toFloat())
 }
 
@@ -498,7 +417,7 @@ fun Offset.rotate(angle: Float): Offset {
 @Preview(widthDp = 400, heightDp = 800, showBackground = true)
 @Composable
 fun TestNCGameScreen() {
-    var angle by remember { mutableStateOf(0f) }
+    var angle by remember { mutableFloatStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
     var bitaLinePosition by remember { mutableStateOf(Offset.Zero) }
@@ -530,8 +449,8 @@ fun TestNCGameScreen() {
         }
     }
 
-    var lastTime by remember { mutableStateOf(0L) }
-    val frameTime = 16_666_667 // 60fps
+    //var lastTime by remember { mutableStateOf(0L) }
+    //val frameTime = 16_666_667 // 60fps
 
     Box(
         modifier = Modifier
@@ -630,16 +549,16 @@ fun TestNCGameScreen() {
                     val canvasHeight = size.height
 
                     // Rect positions todo: make it all into a class or something
-                    val firstRectTopLeft = Offset(x = (canvasWidth / 3).toFloat(), y = (canvasHeight / 6).toFloat())
-                    val firstRectSize = Size(width = (canvasWidth / 60).toFloat(), height = (canvasHeight / 40).toFloat())
-                    val secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2).toFloat(), y = (canvasHeight / 6).toFloat())
-                    val secondRectSize = Size(width = (canvasWidth / 60).toFloat(), height = (canvasHeight / 40).toFloat())
-                    val thirdRectTopLeft = Offset(x = (canvasWidth / 2).toFloat(), y = (canvasHeight / 6).toFloat())
-                    val thirdRectSize = Size(width = (canvasWidth / 60).toFloat(), height = (canvasHeight / 40).toFloat())
-                    val fourthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60).toFloat(), y = (canvasHeight / 4).toFloat())
-                    val fourthRectSize = Size(width = (canvasWidth / 40).toFloat(), height = (canvasHeight / 60).toFloat())
-                    val fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60).toFloat(), y = (canvasHeight / 10).toFloat())
-                    val fifthRectSize = Size(width = (canvasWidth / 40).toFloat(), height = (canvasHeight / 60).toFloat())
+                    val firstRectTopLeft = Offset(x = (canvasWidth / 3), y = (canvasHeight / 6))
+                    val firstRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                    val secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2), y = (canvasHeight / 6))
+                    val secondRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                    val thirdRectTopLeft = Offset(x = (canvasWidth / 2), y = (canvasHeight / 6))
+                    val thirdRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                    val fourthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 4))
+                    val fourthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
+                    val fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 10))
+                    val fifthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
 
                     val lineStart = Offset(x = -canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
                     val lineEnd = Offset(x = canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
