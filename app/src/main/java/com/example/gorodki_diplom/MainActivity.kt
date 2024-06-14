@@ -518,6 +518,7 @@ fun TestNCGameScreen() {
             delay(8)
         }
     }
+    /**/
     LaunchedEffect(isDragging) {
         if (!isDragging) {
             while (bitaLinePosition.y > -1600) {
@@ -544,33 +545,11 @@ fun TestNCGameScreen() {
                     }
                 }
             }
+            /**/
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = {
                         isDragging = false
-                        /*
-                        var i = 0
-                        while(i<160){
-                            offset += Offset(x = 0f, y = -10f)
-                            //delay(8)
-                            i++
-                        }*/
-                        //bitaLinePosition = Offset.Zero
-                        //offset += Offset(x = 0f, y = 170f)
-                        /*
-                        while (offset.y > -1600) {
-                            var i = 0
-                            while (i < 8) {
-                                val currentTime = System.nanoTime()
-                                if (currentTime - lastTime >= frameTime) {
-                                    offset += Offset(x = 0f, y = -10f)
-                                    //bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 10)
-                                    lastTime = currentTime
-                                    i++
-                                }
-                            }
-                        }*/
-
                     }
                 )
             }
