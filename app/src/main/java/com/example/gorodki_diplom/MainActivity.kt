@@ -464,7 +464,6 @@ fun TestNCGameScreen() {
                     }
                 }
             }
-            /**/
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = {
@@ -473,8 +472,6 @@ fun TestNCGameScreen() {
                 )
             }
     ) {
-
-
 
         Column {
             Box(
@@ -496,6 +493,32 @@ fun TestNCGameScreen() {
                             strokeWidth = 4.0f
                         )
                     }
+
+                    // Town box
+                    drawLine( // Top
+                        color = Color.White,
+                        start = Offset(x = canvasWidth/4, y = canvasWidth/6 - canvasWidth/16),
+                        end = Offset(x = canvasWidth/2+canvasWidth/4 + canvasWidth/64, y = canvasWidth/6 - canvasWidth/16),
+                        strokeWidth = 4.0f
+                    )
+                    drawLine( // Bottom
+                        color = Color.White,
+                        start = Offset(x = canvasWidth/4, y = canvasWidth/2 + canvasWidth/8),
+                        end = Offset(x = canvasWidth/2+canvasWidth/4 + canvasWidth/64, y = canvasWidth/2 + canvasWidth/8),
+                        strokeWidth = 4.0f
+                    )
+                    drawLine( //Left
+                        color = Color.White,
+                        start = Offset(x = canvasWidth/4, y = canvasWidth/6 - canvasWidth/16),
+                        end = Offset(x = canvasWidth/4, y = canvasWidth/2 + canvasWidth/8),
+                        strokeWidth = 4.0f
+                    )
+                    drawLine( // Right
+                        color = Color.White,
+                        start = Offset(x = canvasWidth/2+canvasWidth/4 + canvasWidth/64, y = canvasWidth/6 - canvasWidth/16),
+                        end = Offset(x = canvasWidth/2+canvasWidth/4 + canvasWidth/64, y = canvasWidth/2 + canvasWidth/8),
+                        strokeWidth = 4.0f
+                    )
 
                     // Rectangles todo: make them levels
                     if (isFirstRectVisible) {
@@ -583,158 +606,6 @@ fun TestNCGameScreen() {
         }
     }
 }
-
-/*
-@Composable
-fun TestNCGameScreen() {
-    var angle by remember { mutableStateOf(0f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
-
-    var isLeftRectangleVisible by remember { mutableStateOf(true) }
-    var isRightRectangleVisible by remember { mutableStateOf(true) }
-
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            angle = (angle + 1) % 360
-            delay(20)
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-
-    ) {
-        Canvas(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            val canvasWidth = size.width
-            val canvasHeight = size.height
-
-            // Two static rectangles
-            /*
-            drawRect( // Left
-                color = Color.White,
-                topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
-                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-            )
-
-            drawRect( // Right
-                color = Color.White,
-                topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
-                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-            )
-            */
-            if (isLeftRectangleVisible) {
-                drawRect(
-                    color = Color.White,
-                    topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
-                    size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                )
-            }
-
-            if (isRightRectangleVisible) {
-                drawRect(
-                    color = Color.White,
-                    topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
-                    size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                )
-            }
-
-
-        }
-
-        Column {
-            Box(modifier = Modifier.fillMaxHeight(0.4f))
-            Box(
-                modifier = Modifier
-                    .background(Color.Green) //todo: hide this
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .pointerInput(Unit) {
-                        detectDragGestures { change, dragAmount ->
-                            change.consume()
-                            offset += dragAmount
-                            //todo: change to offset += Offset(x = dragAmount.x, y = 0f) after collision is working
-                            //offset += Offset(x = dragAmount.x, y = 0f)
-                        }
-                        detectDragGestures { change, dragAmount ->
-                            change.consume()
-                            offset += dragAmount
-
-                            // Calculate the endpoints of the line
-                            //val lineStart = Offset(x = (size.width / 2 - size.width / 6).toFloat(), y = (size.height / 2).toFloat())
-                            //val lineEnd = Offset(x = (size.width / 2 + size.width / 6).toFloat(), y = (size.height / 2).toFloat())
-
-                            // Calculate the top left corner and size of each rectangle
-                            val leftRectTopLeft = Offset(x = (size.width / 3).toFloat(), y = (size.height / 6).toFloat())
-                            val leftRectSize = Size(width = (size.width / 60).toFloat(), height = (size.height / 40).toFloat())
-                            val rightRectTopLeft = Offset(x = (size.width / 6 + size.width / 2).toFloat(), y = (size.height / 6).toFloat())
-                            val rightRectSize = Size(width = (size.width / 60).toFloat(), height = (size.height / 40).toFloat())
-
-                            // Calculate the transformed line's endpoints
-                            val lineStart = Offset(x = (-size.width / 6).toFloat(), y = 0f).rotate(angle) + Offset(x = (size.width / 2).toFloat(), y = (size.height / 2).toFloat()) + offset
-                            val lineEnd = Offset(x = (size.width / 6).toFloat(), y = 0f).rotate(angle) + Offset(x = (size.width / 2).toFloat(), y = (size.height / 2).toFloat()) + offset
-
-                            // Check if the line intersects with each rectangle
-                            isLeftRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, leftRectTopLeft, leftRectSize)
-                            isRightRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, rightRectTopLeft, rightRectSize)
-
-                            // Check if the line intersects with each rectangle
-                            //isLeftRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, leftRectTopLeft, leftRectSize)
-                            //isRightRectangleVisible = !doesLineIntersectRectangle(lineStart, lineEnd, rightRectTopLeft, rightRectSize)
-                        }
-
-                    }
-            ){
-                // The Throw line
-                Canvas(modifier = Modifier.fillMaxSize()){
-                    val canvasWidth = size.width
-                    val canvasHeight = size.height
-
-                    translate(left = canvasWidth / 2, top = canvasHeight / 2) {
-                        drawLine(
-                            color = Color.White,
-                            start = Offset(x = -canvasWidth, y = 0f),
-                            end = Offset(x = canvasWidth, y = 0f),
-                            strokeWidth = 4.0f
-                        )
-                    }
-                }
-
-                // Transformations to the Bita line
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer(
-                            translationX = offset.x,
-                            translationY = offset.y,
-                            rotationZ = angle
-                        )
-                ) {
-                    // The line here to be transformed
-                    val canvasWidth = size.width
-                    val canvasHeight = size.height
-
-                    // Translate the line to its center before rotating it
-                    translate(left = canvasWidth / 2, top = canvasHeight / 2) {
-                        drawLine(
-                            color = Color.White,
-                            start = Offset(x = -canvasWidth / 6, y = 0f),
-                            end = Offset(x = canvasWidth / 6, y = 0f),
-                            strokeWidth = 14.0f
-                        )
-                    }
-                }
-            }
-        }
-
-    }
-}
-*/
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
