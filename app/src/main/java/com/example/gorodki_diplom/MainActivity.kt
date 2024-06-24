@@ -178,7 +178,7 @@ fun CustomCircleButton(
 
 // All screens
 enum class Screen {
-    Menu, Profile, Settings, CGame, Rules
+    Menu, Profile, Settings, CGame, Leaderboard, Rules
 }
 
 @Composable
@@ -189,17 +189,19 @@ fun MenuScreen() {
             onProfileClick = { currentScreen = Screen.Profile },
             onSettingsClick = { currentScreen = Screen.Settings },
             onCGameClick = { currentScreen = Screen.CGame },
+            onLBClick = { currentScreen = Screen.Leaderboard },
             onRulesClick = { currentScreen = Screen.Rules }
         )
         Screen.Profile -> ProfileScreen { currentScreen = Screen.Menu }
         Screen.Settings -> SettingsScreen { currentScreen = Screen.Menu }
         Screen.CGame -> CGameScreen { currentScreen = Screen.Menu }
+        Screen.Leaderboard -> LBScreen { currentScreen = Screen.Menu }
         Screen.Rules -> RulesScreen { currentScreen = Screen.Menu }
     }
 }
 
 @Composable
-fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit, onRulesClick: () -> Unit) {
+fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit, onLBClick:() -> Unit, onRulesClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -230,6 +232,9 @@ fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameC
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.08f))
             CustomMenuButton(text = "Классическая игра", onClick = onCGameClick)
 
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            CustomMenuButton(text = "Рекорды", onClick = onLBClick)
+            
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
             CustomMenuButton(text = "Правила", onClick = onRulesClick)
 
@@ -322,6 +327,35 @@ fun CGameScreen(onScreenChange: () -> Unit) {
             }
             //Text("Classic game Screen", modifier = Modifier.padding(16.dp), color = Color.White)
             TestNCGameScreen()
+        }
+    }
+}
+
+@Composable
+fun LBScreen(onScreenChange: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+        ) {
+            Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
+            Row (
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp, 0.dp, 10.dp, 0.dp),
+            ){
+                CustomCircleButton(text = "<", onClick = onScreenChange)
+            }
+            Text("Leaderboard Screen", modifier = Modifier.padding(16.dp))
         }
     }
 }
@@ -431,6 +465,42 @@ fun TestNCGameScreen() {
     var isFourthRectVisible by remember { mutableStateOf(true) }
     var isFifthRectVisible by remember { mutableStateOf(true) }
 
+
+
+    var lineStart = Offset(x = 0f, y = 0f).rotate(angle)
+    var lineEnd = Offset(x = 0f, y = 0f).rotate(angle)
+
+    var firstRectTopLeft = Offset(x = 0f, y = 0f)
+    var firstRectSize = Size(width = 0f, height = 0f)
+    var secondRectTopLeft = Offset(x = 0f, y = 0f)
+    var secondRectSize = Size(width = 0f, height = 0f)
+    var thirdRectTopLeft = Offset(x = 0f, y = 0f)
+    var thirdRectSize = Size(width = 0f, height = 0f)
+    var fourthRectTopLeft = Offset(x = 0f, y = 0f)
+    var fourthRectSize = Size(width = 0f, height = 0f)
+    var fifthRectTopLeft = Offset(x = 0f, y = 0f)
+    var fifthRectSize= Size(width = 0f, height = 0f)
+
+    fun checkIntersections() {
+        if(isFirstRectVisible){
+            isFirstRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, firstRectTopLeft, firstRectSize)
+        }
+        if(isSecondRectVisible){
+            isSecondRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, secondRectTopLeft, secondRectSize)
+        }
+        if(isThirdRectVisible){
+            isThirdRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, thirdRectTopLeft, thirdRectSize)
+        }
+        if(isFourthRectVisible){
+            isFourthRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, fourthRectTopLeft, fourthRectSize)
+        }
+        if(isFifthRectVisible){
+            isFifthRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, fifthRectTopLeft, fifthRectSize)
+        }
+    }
+
+
+
     LaunchedEffect(Unit) {
         while (true) {
             angle = (angle + 2) % 360
@@ -440,17 +510,28 @@ fun TestNCGameScreen() {
     /**/
     LaunchedEffect(isDragging) {
         if (!isDragging) {
-            while (bitaLinePosition.y > -1600) {
-                bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 10)
-                delay(8)
+            val tmp = bitaLinePosition.y
+            while (bitaLinePosition.y > -100) {
+                bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 1)
+                //checkIntersections()
+                offset += Offset(x = 0f, y = bitaLinePosition.y - 1)
+                checkIntersections()
+                delay(32)
             }
             bitaLinePosition = Offset.Zero
+            offset = Offset(x = bitaLinePosition.x, y = tmp)
             isDragging = true
+
+            if(!isFirstRectVisible && !isSecondRectVisible && !isThirdRectVisible && !isFourthRectVisible && !isFifthRectVisible){
+                //delay(64)
+                isFirstRectVisible = true
+                isSecondRectVisible = true
+                isThirdRectVisible = true
+                isFourthRectVisible = true
+                isFifthRectVisible = true
+            }
         }
     }
-
-    //var lastTime by remember { mutableStateOf(0L) }
-    //val frameTime = 16_666_667 // 60fps
 
     Box(
         modifier = Modifier
@@ -480,6 +561,7 @@ fun TestNCGameScreen() {
                     .fillMaxHeight()
                     .fillMaxWidth()
             ){
+                // Static objects
                 Canvas(modifier = Modifier.fillMaxSize()){
                     val canvasWidth = size.width
                     val canvasHeight = size.height
@@ -572,26 +654,24 @@ fun TestNCGameScreen() {
                     val canvasHeight = size.height
 
                     // Rect positions todo: make it all into a class or something
-                    val firstRectTopLeft = Offset(x = (canvasWidth / 3), y = (canvasHeight / 6))
-                    val firstRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
-                    val secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2), y = (canvasHeight / 6))
-                    val secondRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
-                    val thirdRectTopLeft = Offset(x = (canvasWidth / 2), y = (canvasHeight / 6))
-                    val thirdRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
-                    val fourthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 4))
-                    val fourthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
-                    val fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 10))
-                    val fifthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
+                    firstRectTopLeft = Offset(x = (canvasWidth / 3), y = (canvasHeight / 6))
+                    firstRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                    secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2), y = (canvasHeight / 6))
+                    secondRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                    thirdRectTopLeft = Offset(x = (canvasWidth / 2), y = (canvasHeight / 6))
+                    thirdRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                    fourthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 4))
+                    fourthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
+                    fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 10))
+                    fifthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
 
-                    val lineStart = Offset(x = -canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
-                    val lineEnd = Offset(x = canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
 
-                    // Intersection detection todo: delete until the end of level
-                    isFirstRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, firstRectTopLeft, firstRectSize)
-                    isSecondRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, secondRectTopLeft, secondRectSize)
-                    isThirdRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, thirdRectTopLeft, thirdRectSize)
-                    isFourthRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, fourthRectTopLeft, fourthRectSize)
-                    isFifthRectVisible = !doesLineIntersectRectangle(lineStart, lineEnd, fifthRectTopLeft, fifthRectSize)
+                    lineStart = Offset(x = -canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
+                    lineEnd = Offset(x = canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
+
+
+                    checkIntersections()
+
 
                     translate(left = canvasWidth / 2, top = canvasHeight / 2) {
                         drawLine(
