@@ -87,6 +87,18 @@ const val darkerCyan = 0xFF004040
 const val tableLightCyan = 0x4400b0b0
 
 
+
+
+var lvl = 1
+
+
+
+
+
+
+
+
+
 // Reusable Title text
 @Composable
 fun PrintTileText(text: String, modifier: Modifier = Modifier) {
@@ -223,7 +235,8 @@ fun MenuScreen() {
 }
 
 @Composable
-fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit, onLBClick:() -> Unit, onRulesClick: () -> Unit) {
+fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameClick: () -> Unit,
+               onLBClick:() -> Unit, onRulesClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -247,19 +260,14 @@ fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameC
                 CustomCircleButton(text = "Profile Icon", onClick = onProfileClick, R.drawable.pfp)
                 CustomCircleButton(text = "Settings Icon", onClick = onSettingsClick, R.drawable.sttng)
             }
-
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.02f))
             PrintTileText(text = "ГОРОДКИ")
-
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.08f))
             CustomMenuButton(text = "Классическая игра", onClick = onCGameClick)
-
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
             CustomMenuButton(text = "Рекорды", onClick = onLBClick)
-            
             Box(modifier = Modifier.fillMaxHeight(fraction = 0.04f))
             CustomMenuButton(text = "Правила", onClick = onRulesClick)
-
         }
     }
 }
@@ -285,7 +293,7 @@ fun TestScreen(){
                 .fillMaxSize()
                 .padding(0.dp, 32.dp, 0.dp, 0.dp)
             ){
-
+                // Draft in figma
             }
         }
     }
@@ -520,17 +528,15 @@ fun RulesScreen(onScreenChange: () -> Unit) {
 
 
 fun doesLineIntersectRectangle(lineStart: Offset, lineEnd: Offset, rectTopLeft: Offset, rectSize: Size): Boolean {
-    //val rectBottomRight = rectTopLeft + rectSize
     val rectBottomRight = Offset(x = rectTopLeft.x + rectSize.width, y = rectTopLeft.y + rectSize.height)
 
-
-    // Check if the line is outside the rectangle's bounds
+    // Линия за границами прямоугольника
     if (lineStart.x < rectTopLeft.x && lineEnd.x < rectTopLeft.x) return false
     if (lineStart.x > rectBottomRight.x && lineEnd.x > rectBottomRight.x) return false
     if (lineStart.y < rectTopLeft.y && lineEnd.y < rectTopLeft.y) return false
     if (lineStart.y > rectBottomRight.y && lineEnd.y > rectBottomRight.y) return false
 
-    // Check if the line intersects with any of the rectangle's edges
+    // Линия пересекается с какой-либо из сторон прямоугольника
     val line = Line(lineStart, lineEnd)
     val top = Line(rectTopLeft, Offset(x = rectBottomRight.x, y = rectTopLeft.y))
     val bottom = Line(Offset(x = rectTopLeft.x, y = rectBottomRight.y), rectBottomRight)
@@ -576,7 +582,7 @@ fun Offset.rotate(angle: Float): Offset {
 }
 
 
-//@Preview(widthDp = 400, heightDp = 800, showBackground = true)
+@Preview(widthDp = 400, heightDp = 800, showBackground = true)
 @Composable
 fun TestNCGameScreen() {
     var angle by remember { mutableFloatStateOf(0f) }
@@ -585,7 +591,10 @@ fun TestNCGameScreen() {
     var bitaLinePosition by remember { mutableStateOf(Offset.Zero) }
     var isDragging by remember { mutableStateOf(true) }
 
-    val verticalOffset = 600f
+    var verticalOffset = 600f
+
+    var throwCloser = false
+    var throwDist = 0f
 
     var isFirstRectVisible by remember { mutableStateOf(true) }
     var isSecondRectVisible by remember { mutableStateOf(true) }
@@ -629,19 +638,19 @@ fun TestNCGameScreen() {
 
 
 
+
+
     LaunchedEffect(Unit) {
         while (true) {
             angle = (angle + 2) % 360
             delay(8)
         }
     }
-    /**/
     LaunchedEffect(isDragging) {
         if (!isDragging) {
             val tmp = bitaLinePosition.y
             while (bitaLinePosition.y > -100) {
                 bitaLinePosition = bitaLinePosition.copy(y = bitaLinePosition.y - 1)
-                //checkIntersections()
                 offset += Offset(x = 0f, y = bitaLinePosition.y - 1)
                 checkIntersections()
                 delay(32)
@@ -650,14 +659,39 @@ fun TestNCGameScreen() {
             offset = Offset(x = bitaLinePosition.x, y = tmp)
             isDragging = true
 
-            if(!isFirstRectVisible && !isSecondRectVisible && !isThirdRectVisible && !isFourthRectVisible && !isFifthRectVisible){
-                //delay(64)
+            // Все невидимые
+            if(!isFirstRectVisible && !isSecondRectVisible && !isThirdRectVisible &&
+                !isFourthRectVisible && !isFifthRectVisible){
                 isFirstRectVisible = true
                 isSecondRectVisible = true
                 isThirdRectVisible = true
                 isFourthRectVisible = true
                 isFifthRectVisible = true
+
+                lvl++
+                if(lvl>2){lvl=1} // todo: fix when more levels
+
+                throwDist = 0f
+                offset += Offset(x = 0f, y = bitaLinePosition.y)
+                throwCloser = false
+
+                firstRectTopLeft = Offset(x = 0f, y = 0f)
+                firstRectSize = Size(width = 0f, height = 0f)
+                secondRectTopLeft = Offset(x = 0f, y = 0f)
+                secondRectSize = Size(width = 0f, height = 0f)
+                thirdRectTopLeft = Offset(x = 0f, y = 0f)
+                thirdRectSize = Size(width = 0f, height = 0f)
+                fourthRectTopLeft = Offset(x = 0f, y = 0f)
+                fourthRectSize = Size(width = 0f, height = 0f)
+                fifthRectTopLeft = Offset(x = 0f, y = 0f)
+                fifthRectSize= Size(width = 0f, height = 0f)
             }
+            /*
+            else if(!throwCloser){ // Хотя бы 1 ещё видимый
+                throwDist = 400f
+                offset += Offset(x = 0f, y = bitaLinePosition.y - 400)
+                throwCloser = true
+            }*/
         }
     }
 
@@ -689,20 +723,60 @@ fun TestNCGameScreen() {
                     .fillMaxHeight()
                     .fillMaxWidth()
             ){
-                // Static objects
-                Canvas(modifier = Modifier.fillMaxSize()){
+
+                Canvas(modifier = Modifier
+                    .fillMaxSize()
+                    /*
+                    .graphicsLayer(
+                        translationX = 0f,
+                        translationY = verticalOffset + throwDist
+                    )*/
+                ){
                     val canvasWidth = size.width
                     val canvasHeight = size.height
 
                     // Throw line todo: move it according to the rules
+
+                    drawLine(
+                        color = Color.White,
+                        start = Offset(x = -canvasWidth, y = canvasHeight / 2 + verticalOffset - throwDist),
+                        end = Offset(x = canvasWidth, y = canvasHeight / 2 + verticalOffset - throwDist),
+                        strokeWidth = 4.0f
+                    )
+
+
+
+                    /*
                     translate(left = canvasWidth / 2, top = canvasHeight / 2 + verticalOffset) {
-                        drawLine(
-                            color = Color.White,
-                            start = Offset(x = -canvasWidth, y = 0f),
-                            end = Offset(x = canvasWidth, y = 0f),
-                            strokeWidth = 4.0f
-                        )
-                    }
+                        if(!throwCloser){
+                            drawLine(
+                                color = Color.White,
+                                start = Offset(x = -canvasWidth, y = 0f),
+                                end = Offset(x = canvasWidth, y = 0f),
+                                strokeWidth = 4.0f
+                            )
+                        }
+                        else {
+                            drawLine(
+                                color = Color.White,
+                                start = Offset(x = -canvasWidth, y = 0f - throwDist),
+                                end = Offset(x = canvasWidth, y = 0f - throwDist),
+                                strokeWidth = 4.0f
+                            )
+                        }
+                    }*/
+                }
+
+
+
+                // Static objects
+                Canvas(modifier = Modifier
+                    .fillMaxSize()
+                ){
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+
+
 
                     // Town box
                     drawLine( // Top
@@ -730,42 +804,85 @@ fun TestNCGameScreen() {
                         strokeWidth = 4.0f
                     )
 
-                    // Rectangles todo: make them levels
-                    if (isFirstRectVisible) {
-                        drawRect(
-                            color = Color.White,
-                            topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
-                            size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                        )
+                    // Rectangles levels todo: make more
+                    if(lvl==1){
+                        if (isFirstRectVisible) {
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)-60*2, y = canvasWidth / 3+40),
+                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                            )
+                        }
+                        if (isSecondRectVisible) {
+                            this.drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)+60*2, y = canvasWidth / 3+40),
+                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                            )
+                        }
+                        if (isThirdRectVisible) {
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasWidth / 3+40),
+                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                            )
+                        }
+                        if (isFourthRectVisible) {
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)+60, y = canvasWidth / 3),
+                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                            )
+                        }
+                        if (isFifthRectVisible) {
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)-60, y = canvasWidth / 3),
+                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                            )
+                        }
                     }
-                    if (isSecondRectVisible) {
-                        drawRect(
-                            color = Color.White,
-                            topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
-                            size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                        )
+
+                    if(lvl==2){
+                        if(isFirstRectVisible){
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
+                                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                            )
+                        }
+                        if(isSecondRectVisible){
+                            this.drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
+                                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                            )
+                        }
+                        if(isThirdRectVisible){
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2, y = canvasHeight / 6),
+                                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                            )
+                        }
+                        if(isFourthRectVisible){
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 4),
+                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                            )
+                        }
+                        if(isFifthRectVisible){
+                            drawRect(
+                                color = Color.White,
+                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 10),
+                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                            )
+                        }
                     }
-                    if (isThirdRectVisible) {
-                        drawRect(
-                            color = Color.White,
-                            topLeft = Offset(x = canvasWidth / 2, y = canvasHeight / 6),
-                            size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                        )
-                    }
-                    if (isFourthRectVisible) {
-                        drawRect(
-                            color = Color.White,
-                            topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 4),
-                            size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                        )
-                    }
-                    if (isFifthRectVisible) {
-                        drawRect(
-                            color = Color.White,
-                            topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 10),
-                            size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                        )
-                    }
+
+                    
+
                 }
 
                 // Bita line with checking if intersected
