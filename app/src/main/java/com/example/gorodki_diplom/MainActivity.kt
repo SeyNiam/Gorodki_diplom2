@@ -4,7 +4,7 @@ package com.example.gorodki_diplom
 /*
 - change icon (res/drawable and/or mipmap?)
 res/values:
-    - add cool colours with names (no lame numbers)
+    + add cool colours with names (no lame numbers)
     - add text through strings
     - figure out what themes are
 - figure out all in res/xml folder
@@ -13,8 +13,8 @@ res/values:
 - i can add c++ tp module (file). look into it
 - fun stuff in tools
 
-- menu
-- game itself (at least 1 lvl)
++ menu
++ game itself (at least 1 lvl)
 - option to stop & quit & stuff
 - login, reg
 - account/profile page
@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import com.example.gorodki_diplom.ui.theme.Gorodki_diplomTheme
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.delay
 
@@ -58,6 +59,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
 
@@ -72,10 +74,17 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
+// Text lines
+const val rulesText =
+    "Чтобы перемещать биту по горизонтали, нажмите на неё пальцем и тяните.\n\n" +
+            "Для того, чтобы бросить биту нажмите на экран.\n\n" +
+            "При попадании битой в городок -- он считается сбитым.\n\n" +
+            "Для прохождения уровня сбейте все городки!\n\n"
 
 // Colours
 const val darkCyan = 0xFF008080
 const val darkerCyan = 0xFF004040
+const val tableLightCyan = 0x4400b0b0
 
 
 // Reusable Title text
@@ -87,6 +96,18 @@ fun PrintTileText(text: String, modifier: Modifier = Modifier) {
             fontSize = 44.sp,
             fontWeight = FontWeight.Light,
             color = Color(darkerCyan)
+    )
+}
+
+// Reusable Any text
+@Composable
+fun PrintAnyText(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        modifier = modifier,
+        fontSize = 28.sp,
+        fontWeight = FontWeight.Light,
+        color = Color(darkerCyan)
     )
 }
 
@@ -181,6 +202,7 @@ enum class Screen {
     Menu, Profile, Settings, CGame, Leaderboard, Rules
 }
 
+//@Preview(widthDp = 400, heightDp = 800, showBackground = true)
 @Composable
 fun MenuScreen() {
     var currentScreen by remember { mutableStateOf(Screen.Menu) }
@@ -241,6 +263,40 @@ fun HomeScreen(onProfileClick: () -> Unit, onSettingsClick: () -> Unit, onCGameC
         }
     }
 }
+
+
+
+
+// todo: ATM -- ProfileScreen
+@Preview(widthDp = 400, heightDp = 800, showBackground = true)
+@Composable
+fun TestScreen(){
+    Box(modifier = Modifier
+        .padding(32.dp, 0.dp, 32.dp, 32.dp)
+    ){
+        Column {
+            Box(modifier = Modifier
+                .fillMaxHeight(0.1f)
+                .fillMaxWidth()
+            ){
+                PrintTileText(text = "ПРОФИЛЬ", Modifier.align(Alignment.Center))
+            }
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp, 32.dp, 0.dp, 0.dp)
+            ){
+
+            }
+        }
+    }
+
+
+}
+
+
+
+
+
 
 
 
@@ -355,7 +411,62 @@ fun LBScreen(onScreenChange: () -> Unit) {
             ){
                 CustomCircleButton(text = "<", onClick = onScreenChange)
             }
-            Text("Leaderboard Screen", modifier = Modifier.padding(16.dp))
+            Box(modifier = Modifier
+                .padding(32.dp, 0.dp, 32.dp, 32.dp)
+            ){
+                Column {
+                    Box(modifier = Modifier
+                        .fillMaxHeight(0.1f)
+                        .fillMaxWidth()
+                    ){
+                        PrintTileText(text = "РЕКОРДЫ", Modifier.align(Alignment.Center))
+                    }
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(0.dp, 32.dp, 0.dp, 0.dp)
+                    ){
+
+                        // todo: List from DB
+                        /*
+                        fun TestScreen(names: List<String>, scores: List<Int>) {
+
+                        TestScreen(names = names, scores = scores)
+                        */
+                        val names = listOf("sht0ra", "I2oony", "Pe5ha", "forest crow", "SeyNiam", "OKta")
+                        val scores = listOf(5000, 1200, 900, 210, 160, 50)
+
+                        // Table
+                        LazyColumn(
+                            modifier = Modifier.border(1.dp, Color(darkerCyan))
+                        ) {
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(darkCyan))
+                                        .padding(8.dp)
+                                ) {
+                                    Text(text = "Имя", modifier = Modifier.weight(1f), color = Color.White, fontSize = 20.sp)
+                                    Text(text = "Счёт", modifier = Modifier.weight(1f), color = Color.White, fontSize = 20.sp)
+                                }
+                            }
+                            items(names.size) { index ->
+                                val backgroundColor = if (index % 2 == 0) Color.White else Color(tableLightCyan)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(backgroundColor)
+                                        .padding(8.dp)
+                                ) {
+                                    Text(text = names[index], modifier = Modifier.weight(1f))
+                                    Text(text = scores[index].toString(), modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
@@ -384,7 +495,24 @@ fun RulesScreen(onScreenChange: () -> Unit) {
             ){
                 CustomCircleButton(text = "<", onClick = onScreenChange)
             }
-            Text("Rules Screen", modifier = Modifier.padding(16.dp))
+            Box(modifier = Modifier
+                .padding(32.dp, 0.dp, 32.dp, 32.dp)
+            ){
+                Column {
+                    Box(modifier = Modifier
+                        .fillMaxHeight(0.1f)
+                        .fillMaxWidth()
+                    ){
+                        PrintTileText(text = "ПРАВИЛА", Modifier.align(Alignment.Center))
+                    }
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(0.dp, 32.dp, 0.dp, 0.dp)
+                    ){
+                        PrintAnyText(text = rulesText)
+                    }
+                }
+            }
         }
     }
 }
@@ -448,7 +576,7 @@ fun Offset.rotate(angle: Float): Offset {
 }
 
 
-@Preview(widthDp = 400, heightDp = 800, showBackground = true)
+//@Preview(widthDp = 400, heightDp = 800, showBackground = true)
 @Composable
 fun TestNCGameScreen() {
     var angle by remember { mutableFloatStateOf(0f) }
@@ -540,7 +668,7 @@ fun TestNCGameScreen() {
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
-                    if(isDragging){
+                    if (isDragging) {
                         offset += Offset(x = dragAmount.x, y = 0f) // todo: dragAmount.y to y=0f
                     }
                 }
