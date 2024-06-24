@@ -669,7 +669,7 @@ fun TestNCGameScreen() {
                 isFifthRectVisible = true
 
                 lvl++
-                if(lvl>2){lvl=1} // todo: fix when more levels
+                if(lvl>3){lvl=1} // todo: fix when more levels
 
                 throwDist = 0f
                 offset += Offset(x = 0f, y = bitaLinePosition.y)
@@ -736,15 +736,12 @@ fun TestNCGameScreen() {
                     val canvasHeight = size.height
 
                     // Throw line todo: move it according to the rules
-
                     drawLine(
                         color = Color.White,
                         start = Offset(x = -canvasWidth, y = canvasHeight / 2 + verticalOffset - throwDist),
                         end = Offset(x = canvasWidth, y = canvasHeight / 2 + verticalOffset - throwDist),
                         strokeWidth = 4.0f
                     )
-
-
 
                     /*
                     translate(left = canvasWidth / 2, top = canvasHeight / 2 + verticalOffset) {
@@ -806,82 +803,79 @@ fun TestNCGameScreen() {
 
                     // Rectangles levels todo: make more
                     if(lvl==1){
-                        if (isFirstRectVisible) {
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)-60*2, y = canvasWidth / 3+40),
-                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                            )
-                        }
-                        if (isSecondRectVisible) {
-                            this.drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)+60*2, y = canvasWidth / 3+40),
-                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                            )
-                        }
-                        if (isThirdRectVisible) {
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasWidth / 3+40),
-                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                            )
-                        }
-                        if (isFourthRectVisible) {
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)+60, y = canvasWidth / 3),
-                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                            )
-                        }
-                        if (isFifthRectVisible) {
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)-60, y = canvasWidth / 3),
-                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                            )
-                        }
+                        firstRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)-60*2, y = canvasWidth / 3+40)
+                        firstRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        secondRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)+60*2, y = canvasWidth / 3+40)
+                        secondRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        thirdRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasWidth / 3+40)
+                        thirdRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        fourthRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)+60, y = canvasWidth / 3)
+                        fourthRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        fifthRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)-60, y = canvasWidth / 3)
+                        fifthRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
                     }
 
                     if(lvl==2){
-                        if(isFirstRectVisible){
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 3, y = canvasHeight / 6),
-                                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                            )
-                        }
-                        if(isSecondRectVisible){
-                            this.drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 6 + canvasWidth / 2, y = canvasHeight / 6),
-                                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                            )
-                        }
-                        if(isThirdRectVisible){
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2, y = canvasHeight / 6),
-                                size = Size(width = canvasWidth / 60, height = canvasHeight / 40)
-                            )
-                        }
-                        if(isFourthRectVisible){
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 4),
-                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                            )
-                        }
-                        if(isFifthRectVisible){
-                            drawRect(
-                                color = Color.White,
-                                topLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasHeight / 10),
-                                size = Size(width = canvasHeight / 40, height = canvasWidth / 60)
-                            )
-                        }
+                        firstRectTopLeft = Offset(x = (canvasWidth / 3), y = (canvasHeight / 6))
+                        firstRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                        secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2), y = (canvasHeight / 6))
+                        secondRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                        thirdRectTopLeft = Offset(x = (canvasWidth / 2), y = (canvasHeight / 6))
+                        thirdRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                        fourthRectTopLeft = Offset(x = (canvasWidth / 2 - canvasWidth / 60), y = (canvasHeight / 4))
+                        fourthRectSize = Size(width = (canvasHeight / 40), height = (canvasWidth / 60))
+                        fifthRectTopLeft = Offset(x = (canvasWidth / 2 - canvasWidth / 60), y = (canvasHeight / 10))
+                        fifthRectSize = Size(width = (canvasHeight / 40), height = (canvasWidth / 60))
                     }
 
-                    
+                    if(lvl==3){
+                        firstRectTopLeft = Offset(x = canvasWidth / 2 , y = canvasWidth / 3)
+                        firstRectSize = Size(width = canvasWidth / 60, height = canvasHeight / 40)
+                        secondRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasWidth / 3-40f)
+                        secondRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        thirdRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60), y = canvasWidth / 2-60)
+                        thirdRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        fourthRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)+32, y = canvasWidth / 2-100)
+                        fourthRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                        fifthRectTopLeft = Offset(x = canvasWidth / 2 - (canvasWidth / 60)-32, y = canvasWidth / 2-100)
+                        fifthRectSize = Size(width = canvasHeight / 40, height = canvasWidth / 60)
+                    }
+
+                    if(isFirstRectVisible){
+                        drawRect(
+                            color = Color.White,
+                            topLeft = firstRectTopLeft,
+                            size = firstRectSize
+                        )
+                    }
+                    if(isSecondRectVisible){
+                        this.drawRect(
+                            color = Color.White,
+                            topLeft = secondRectTopLeft,
+                            size = secondRectSize
+                        )
+                    }
+                    if(isThirdRectVisible){
+                        drawRect(
+                            color = Color.White,
+                            topLeft = thirdRectTopLeft,
+                            size = thirdRectSize
+                        )
+                    }
+                    if(isFourthRectVisible){
+                        drawRect(
+                            color = Color.White,
+                            topLeft = fourthRectTopLeft,
+                            size = fourthRectSize
+                        )
+                    }
+                    if(isFifthRectVisible){
+                        drawRect(
+                            color = Color.White,
+                            topLeft = fifthRectTopLeft,
+                            size = fifthRectSize
+                        )
+                    }
 
                 }
 
@@ -899,16 +893,25 @@ fun TestNCGameScreen() {
                     val canvasHeight = size.height
 
                     // Rect positions todo: make it all into a class or something
-                    firstRectTopLeft = Offset(x = (canvasWidth / 3), y = (canvasHeight / 6))
-                    firstRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
-                    secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2), y = (canvasHeight / 6))
-                    secondRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
-                    thirdRectTopLeft = Offset(x = (canvasWidth / 2), y = (canvasHeight / 6))
-                    thirdRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
-                    fourthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 4))
-                    fourthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
-                    fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 10))
-                    fifthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
+                    if (lvl==1){
+
+                    }
+                    if(lvl==2){
+                        firstRectTopLeft = Offset(x = (canvasWidth / 3), y = (canvasHeight / 6))
+                        firstRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                        secondRectTopLeft = Offset(x = (canvasWidth / 6 + canvasWidth / 2), y = (canvasHeight / 6))
+                        secondRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                        thirdRectTopLeft = Offset(x = (canvasWidth / 2), y = (canvasHeight / 6))
+                        thirdRectSize = Size(width = (canvasWidth / 60), height = (canvasHeight / 40))
+                        fourthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 4))
+                        fourthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
+                        fifthRectTopLeft = Offset(x = (canvasWidth / 2 + canvasWidth / 60), y = (canvasHeight / 10))
+                        fifthRectSize = Size(width = (canvasWidth / 40), height = (canvasHeight / 60))
+                    }
+                    if(lvl==3){
+
+                    }
+
 
 
                     lineStart = Offset(x = -canvasWidth / 6, y = 0f).rotate(angle) + Offset(x = canvasWidth / 2, y = canvasHeight / 2) + offset + Offset(x = 0f, y = verticalOffset)
